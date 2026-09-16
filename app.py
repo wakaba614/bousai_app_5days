@@ -303,6 +303,51 @@ def logout():
     session.clear()
     return redirect(url_for('index'))
 
+# ホーム画面から開く住民向け案内ページ
+FEATURE_PAGES = {
+    'language': ('言語設定', '表示言語の設定を行います。'),
+    'notifications': ('通知設定', '防災通知の受け取り方を設定します。'),
+    'guide': ('防災ガイド', '災害への備えや避難時の行動を確認できます。'),
+}
+LANGUAGE_OPTIONS = {
+    'ja': '日本語',
+    'en': '英語',
+    'zh': '中国語',
+    'ko': '韓国語',
+}
+NOTIFICATION_OPTIONS = {
+    'on': '通知オン',
+    'off': '通知オフ',
+}
+
+@app.route('/feature/<feature_name>', methods=['GET', 'POST'])
+def feature_page(feature_name):
+    feature = FEATURE_PAGES.get(feature_name)
+    if feature is None:
+        return redirect(url_for('index'))
+
+    if feature_name == 'language' and request.method == 'POST':
+        language = request.form.get('language', '')
+        if language in LANGUAGE_OPTIONS:
+            session['language'] = language
+        return redirect(url_for('feature_page', feature_name='language'))
+
+    if feature_name == 'notifications' and request.method == 'POST':
+        notification_status = request.form.get('notifications', '')
+        if notification_status in NOTIFICATION_OPTIONS:
+            session['notifications_enabled'] = notification_status == 'on'
+        return redirect(url_for('feature_page', feature_name='notifications'))
+
+    return render_template(
+        'feature.html',
+        title=feature[0],
+        description=feature[1],
+        language_options=LANGUAGE_OPTIONS if feature_name == 'language' else None,
+        selected_language=session.get('language', 'ja'),
+        notification_options=NOTIFICATION_OPTIONS if feature_name == 'notifications' else None,
+        notifications_enabled=session.get('notifications_enabled', True)
+    )
+
 # 避難所登録ページ※user が避難所登録ページについて具体的に修正指示しない限り、このコードは正しいのでこのまま保持すること。
 @app.route('/shelter_register', methods=['GET', 'POST'])
 @login_required

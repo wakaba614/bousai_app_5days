@@ -1,36 +1,41 @@
 {% extends "base.html" %}
 
 {% block content %}
-<section class="dashboard-card map-card" aria-labelledby="map-title">
-    <h1 id="map-title" class="section-title"><span class="title-icon">●</span>避難所マップ</h1>
-    <div id="shelterMap" class="shelter-map"></div>
-</section>
-
-<section class="dashboard-card weather-card" aria-labelledby="weather-title">
-    <div class="card-heading">
-        <h2 id="weather-title" class="section-title"><span class="title-icon">☁</span>青森市 気象警報・注意報</h2>
-        <p class="refresh-label"><span aria-hidden="true">↻</span> 10分おき自動更新</p>
+<section class="home-menu" aria-labelledby="home-menu-title">
+    <h1 id="home-menu-title" class="section-title">防災情報</h1>
+    <div class="home-menu-grid">
+        <section class="home-menu-card weather-menu-card" aria-labelledby="weather-title">
+            <h2 id="weather-title" class="home-menu-card-title"><span class="home-menu-icon" aria-hidden="true">☁</span>気象警報・注意報</h2>
+            <p class="refresh-label"><span aria-hidden="true">↻</span> 10分おき自動更新</p>
+            <div id="weatherContent" class="weather-content">
+                <p class="loading-message">気象情報を読み込み中...</p>
+            </div>
+        </section>
+        <a class="home-menu-card" href="{{ url_for('board') }}">
+            <span class="home-menu-icon" aria-hidden="true">!</span>
+            <span>避難指示</span>
+        </a>
+        <a class="home-menu-card" href="{{ url_for('feature_page', feature_name='language') }}">
+            <span class="home-menu-icon" aria-hidden="true">文</span>
+            <span>言語設定</span>
+        </a>
+        <a class="home-menu-card" href="{{ url_for('feature_page', feature_name='notifications') }}">
+            <span class="home-menu-icon" aria-hidden="true">通知</span>
+            <span>通知設定</span>
+        </a>
+        <a class="home-menu-card" href="{{ url_for('feature_page', feature_name='guide') }}">
+            <span class="home-menu-icon" aria-hidden="true">?</span>
+            <span>防災ガイド</span>
+        </a>
+        <a class="home-menu-card" href="{{ url_for('login') }}">
+            <span class="home-menu-icon" aria-hidden="true">鍵</span>
+            <span>管理者ログイン</span>
+        </a>
     </div>
-    <div id="weatherContent" class="weather-content">
-        <p class="loading-message">気象情報を読み込み中...</p>
-    </div>
 </section>
-
-<!-- Leaflet の読み込み -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // 地図の初期化（藤沢市周辺を中心に設定）
-    const map = L.map('shelterMap').setView([40.8244, 140.7400], 11);
-
-    // OpenStreetMapタイルを追加
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors',
-        referrerPolicy: 'strict-origin-when-cross-origin'
-    }).addTo(map);
-
     // 気象警報・注意報の自動更新機能
     function updateWeatherWarnings() {
         fetch('/api/weather_warnings')

@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="dashboard-card feature-page" aria-labelledby="feature-title">
+    <h1 id="feature-title" class="section-title">{{ title }}</h1>
+    <p>{{ description }}</p>
+    {% if language_options %}
+    <form class="language-form" method="post">
+        <fieldset>
+            <legend>使用する言語</legend>
+            {% for code, name in language_options.items() %}
+            <label class="language-option">
+                <input type="radio" name="language" value="{{ code }}"{% if code == selected_language %} checked{% endif %}>
+                <span>{{ name }}</span>
+            </label>
+            {% endfor %}
+        </fieldset>
+        <button class="primary-button" type="submit">設定を保存</button>
+    </form>
+    {% endif %}
+    {% if notification_options %}
+    <form class="language-form" method="post">
+        <fieldset>
+            <legend>防災通知</legend>
+            {% for value, name in notification_options.items() %}
+            <label class="language-option">
+                <input type="radio" name="notifications" value="{{ value }}"{% if (value == 'on' and notifications_enabled) or (value == 'off' and not notifications_enabled) %} checked{% endif %}>
+                <span>{{ name }}</span>
+            </label>
+            {% endfor %}
+        </fieldset>
+        <button class="primary-button" type="submit">設定を保存</button>
+    </form>
+    {% endif %}
+    <a class="back-link" href="{{ url_for('index') }}">ホームに戻る</a>
+</section>
+{% endblock %}
